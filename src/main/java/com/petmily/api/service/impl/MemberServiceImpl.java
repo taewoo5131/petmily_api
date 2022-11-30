@@ -11,6 +11,8 @@ import com.petmily.api.service.MemberService;
 import com.petmily.api.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     private final TokenService tokenService;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public ResponseEntity Join(Map<String, Object> paramMap) {
@@ -79,6 +83,9 @@ public class MemberServiceImpl implements MemberService {
                 // refresh token DB에 저장
                 memberRepository.updateRefreshToken(findMember , refreshToken);
 
+                // redis에 블랙리스트 제거
+                redisTemplate.delete("member_"+findMember.getIdx());
+
                 successResponse.setData(tokenDTO);
                 return new ResponseEntity(successResponse, HttpStatus.OK);
             } else {
@@ -92,6 +99,19 @@ public class MemberServiceImpl implements MemberService {
     public String getRefreshToken(String requestPk) {
         Member findMember = memberRepository.findMemberByIdx(requestPk);
         return findMember.getRefreshToken();
+    }
+
+    @Override
+    public ResponseEntity logout(String memberId) {
+        // redis에 블랙리스트 저장
+        String key = "member_"+memberId;
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(key , "logout");
+
+        // DB refreshToken 제거
+        Member findMember = memberRepository.findMemberByIdx(memberId);
+        memberRepository.updateRefreshToken(findMember,null);
+        return new ResponseEntity(new SuccessResponse(), HttpStatus.OK);
     }
 
     /**

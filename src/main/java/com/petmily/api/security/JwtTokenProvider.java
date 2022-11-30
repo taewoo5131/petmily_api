@@ -22,8 +22,8 @@ public class JwtTokenProvider {
     private String secretKey = Base64.getEncoder().encodeToString("petmilyapiproject2022".getBytes());
 
     // accessToken 30분
-//    private final long accessTokenValidTime = 30 * 60 * 1000L;
-    private final long accessTokenValidTime = 10 * 1000L;
+    private final long accessTokenValidTime = 30 * 60 * 1000L;
+//    private final long accessTokenValidTime = 5 * 1000L;
 
     // resfreshToken 2주
     LocalDate today = LocalDate.now();
@@ -50,7 +50,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setIssuedAt(now)
                 .setExpiration(refreshTokenVaildTime) // 2주
-//                .setExpiration(new Date( * 1000L)) // 20초
+//                .setExpiration(new Date(6 * 1000L)) // 20초
                 .signWith(SignatureAlgorithm.HS256, this.secretKey)
                 .compact();
     }

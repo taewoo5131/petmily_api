@@ -13,7 +13,8 @@ public enum ResponseEnum {
     DUP_MEMBER("1002", "중복된 회원 정보"),
     INTERNAL_SERVER_ERROR("1001", "서버 에러"),
     ILLEGAL_ARGS_ERROR("1000", "필수값 누락"),
-    NO_ACCESS_TOKEN("0002", "토큰 누락"),
+    NO_REFRESH_TOKEN("0003", "REFRESH 토큰 누락"),
+    NO_ACCESS_TOKEN("0002", "ACCESS 토큰 누락"),
     REISSUANCE_ACCESS_TOKEN("0001", "토큰 재발급"),
     SUCCESS("0000", "성공");
 

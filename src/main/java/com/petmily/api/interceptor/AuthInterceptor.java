@@ -4,23 +4,40 @@ import com.petmily.api.Exception.custom.TokenException;
 import com.petmily.api.security.JwtTokenProvider;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
+import java.util.*;
 
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        RedisTemplate<String,String> redisTemplate = new RedisTemplate();
         log.info("[AuthInterceptor.prehandle] >> {} " , request.getRequestURI());
         String requestToken = "";
         requestToken = request.getHeader("X-AUTH-TOKEN");
         if (requestToken != null && !requestToken.isEmpty()) {
             JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
-            // accessToken check
+
             try {
+                // 블랙리스트 체크
+                Claims claims = Jwts.parser()
+                        .setSigningKey(Base64.getEncoder().encodeToString("petmilyapiproject2022".getBytes()))
+                        .parseClaimsJws(requestToken)
+                        .getBody();
+
+                System.out.println("블랙리스트 체크" + redisTemplate.hasKey("member_"+claims.get("pk")));
+                if (redisTemplate.hasKey("member_"+claims.get("pk"))) {
+                    throw new TokenException("blackList token");
+                }
+
+                // accessToken check
                 boolean tokenCheck = jwtTokenProvider.validAccessToken(requestToken);
                 if (tokenCheck) {
                     return true;
@@ -31,10 +48,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                 response.sendRedirect(request.getContextPath() + "/member/refresh-token?pk="+requestPk);
             // 인증 오류
             } catch (SignatureException e) {
-                // 로그아웃 후 재로그인
-                return false;
+                throw new TokenException("token 누락");
             }
+        } else {
+            throw new TokenException("token 누락");
         }
-        throw new TokenException("token 누락");
+        return false;
     }
 }

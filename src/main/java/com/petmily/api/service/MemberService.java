@@ -10,4 +10,6 @@ public interface MemberService {
     ResponseEntity login(Map<String, Object> paramMap);
 
     String getRefreshToken(String requestPk);
+
+    ResponseEntity logout(String memberId);
 }

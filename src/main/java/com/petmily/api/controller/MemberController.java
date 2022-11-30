@@ -49,9 +49,12 @@ public class MemberController {
         return memberService.login(paramMap);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity postLogout() {
-        return null;
+    @GetMapping("/logout")
+    public ResponseEntity getLogout(
+            @RequestParam("memberId") String memberId
+    ) {
+        log.info("[MemberController.getLogout] >> {} " , "logout");
+        return memberService.logout(memberId);
     }
 
     @GetMapping("/refresh-token")
@@ -60,6 +63,9 @@ public class MemberController {
     ) {
         log.info("[MemberController.refreshToken] >> {} " , requestPk);
         String refreshToken = memberService.getRefreshToken(requestPk);
+        if (refreshToken == null) {
+            return new ResponseEntity(ResponseEnum.NO_REFRESH_TOKEN, HttpStatus.BAD_REQUEST);
+        }
         boolean refreshTokenCheck = tokenService.tokenCheck(refreshToken);
         if(refreshTokenCheck){
             // accessToken 재발급
@@ -71,8 +77,7 @@ public class MemberController {
             return new ResponseEntity(successResponse, HttpStatus.OK);
         } else {
             // 로그아웃 후 재로그인
-            System.out.println("로그아웃 !");
+            return memberService.logout(requestPk);
         }
-        return null;
     }
 }
