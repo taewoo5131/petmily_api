@@ -23,10 +23,14 @@ public class SHA256 {
      * @param param
      * @return
      */
-    public String getEncrypt(String param) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(param.getBytes());
-        return bytesToHex(md.digest());
+    public String getEncrypt(String param) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(param.getBytes());
+            return bytesToHex(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
@@ -34,20 +38,24 @@ public class SHA256 {
      * @param text
      * @return
      */
-    public String joinEncrypt(String text) throws NoSuchAlgorithmException{
-        SecureRandom random = null;
-        random = SecureRandom.getInstance("SHA1PRNG");
+    public String joinEncrypt(String text){
+        try {
+            SecureRandom random = null;
+            random = SecureRandom.getInstance("SHA1PRNG");
 
-        byte[] bytes = new byte[16];
-        random.nextBytes(bytes);
-        // Salt 생성
-        this.salt = new String(Base64.getEncoder().encode(bytes));
+            byte[] bytes = new byte[16];
+            random.nextBytes(bytes);
+            // Salt 생성
+            this.salt = new String(Base64.getEncoder().encode(bytes));
 
-        // SHA-256
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(this.salt.getBytes());
-        md.update(text.getBytes());
-        return bytesToHex(md.digest());
+            // SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(this.salt.getBytes());
+            md.update(text.getBytes());
+            return bytesToHex(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 
@@ -57,13 +65,17 @@ public class SHA256 {
      * @param pw
      * @return
      */
-    public String loginEncrypt(String salt , String pw) throws NoSuchAlgorithmException {
-        // SHA-256
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(salt.getBytes());
-        md.update(pw.getBytes());
+    public String loginEncrypt(String salt , String pw){
+        try {
+            // SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt.getBytes());
+            md.update(pw.getBytes());
 
-        return bytesToHex(md.digest());
+            return bytesToHex(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private String bytesToHex(byte[] bytes) {

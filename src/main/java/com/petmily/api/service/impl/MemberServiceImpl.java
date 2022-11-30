@@ -2,10 +2,13 @@ package com.petmily.api.service.impl;
 
 import com.petmily.api.common.ResponseEnum;
 import com.petmily.api.common.SuccessResponse;
+import com.petmily.api.dto.TokenDTO;
 import com.petmily.api.entity.Member;
 import com.petmily.api.repository.MemberRepository;
+import com.petmily.api.security.JwtTokenProvider;
 import com.petmily.api.security.SHA256;
 import com.petmily.api.service.MemberService;
+import com.petmily.api.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,57 +28,86 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final TokenService tokenService;
+
     @Override
     public ResponseEntity Join(Map<String, Object> paramMap) {
-        log.info("serviceImpl join");
-        char validCheck = this.joinValidCheck(paramMap);
+        log.info("[serviceImpl join]");
+        String[] checkKeyArr = {"id", "name", "password", "phoneNumber"};
+        char checkType = 'j';
+        char validCheck = this.validCheck(paramMap , checkKeyArr , checkType);
         if (validCheck == 'S') {
             Member member = new Member();
-            try {
-                member.setId(paramMap.get("id").toString());
-                member.setPassword(sha256.joinEncrypt(paramMap.get("password").toString()));
-                member.setName(paramMap.get("name").toString());
-                member.setPhoneNumber(paramMap.get("phoneNumber").toString());
-                member.setSalt(sha256.getSalt());
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
+            member.setId(paramMap.get("id").toString());
+            member.setPassword(sha256.joinEncrypt(paramMap.get("password").toString()));
+            member.setName(paramMap.get("name").toString());
+            member.setPhoneNumber(paramMap.get("phoneNumber").toString());
+            member.setSalt(sha256.getSalt());
             String saveId = memberRepository.save(member);
 
             if (saveId.equals(member.getId())) {
                 SuccessResponse successResponse = new SuccessResponse();
-                HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
-                objectObjectHashMap.put("test", "taewoo");
-                successResponse.setData(objectObjectHashMap);
                 return new ResponseEntity(successResponse,HttpStatus.OK);
             }
         } else if (validCheck == 'D') {
             return new ResponseEntity(ResponseEnum.DUP_MEMBER, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(ResponseEnum.ILLEGAL_ARGS_ERROR , HttpStatus.BAD_REQUEST);
+        throw new IllegalArgumentException("MemberServiceImpl.join 필수값 누락");
+    }
+
+    @Override
+    public ResponseEntity login(Map<String, Object> paramMap) {
+        log.info("[serviceImpl login]");
+        String[] checkKeyArr = {"id" , "password"};
+        char checkType = 'l';
+        char validCheck = this.validCheck(paramMap, checkKeyArr , checkType);
+        if (validCheck == 'S') {
+            // id에 해당하는 Member
+            Member findMember = memberRepository.findMemberById(paramMap.get("id").toString());
+            // salt값 가져오기
+            String findSalt = findMember.getSalt();
+            // 가져온 salt값으로 cli가 넘긴 password 해싱처리
+            String password = paramMap.get("password").toString();
+            String encryptPassword = sha256.loginEncrypt(findSalt, password);
+
+            if (findMember.getPassword().equals(encryptPassword)) {
+                SuccessResponse successResponse = new SuccessResponse();
+                TokenDTO token = tokenService.createToken(findMember.getIdx().toString());
+                // refresh token DB에 저장
+                String refreshToken = token.getRefreshToken();
+                memberRepository.updateRefreshToken(findMember , refreshToken);
+
+                successResponse.setData(token);
+                return new ResponseEntity(successResponse, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(ResponseEnum.LOGIN_FAIL, HttpStatus.BAD_REQUEST);
+            }
+        }
+        throw new IllegalArgumentException("MemberServiceImpl.login 필수값 누락");
     }
 
     /**
-     * [id , name , password , phoneNumber] Null 체크
-     * @param paramMap
+     * [checkKeyArr] Null 체크
+     * @param paramMap , keyArr , checkType
      * @return char
      *         ['S' : success , 'D' : duplicate ID , 'N' : NullPointerException]
      */
-    private char joinValidCheck(Map<String, Object> paramMap) {
+    private char validCheck(Map<String, Object> paramMap , String[] keyArr , char checkType) {
         try {
-            String id = Optional.of(paramMap.get("id")).toString();
-            String name = Optional.of(paramMap.get("name")).toString();
-            String password = Optional.of(paramMap.get("password")).toString();
-            String phoneNumber = Optional.of(paramMap.get("phoneNumber")).toString();
-
-            String existId = memberRepository.findMemberById(paramMap.get("id").toString());
-            if(Integer.parseInt(existId) > 0){
-                return 'D';
+            for (String key : keyArr) {
+                Optional.of(paramMap.get(key)).toString();
+            }
+            if (checkType == 'j') {
+                String existId = memberRepository.existMemberById(paramMap.get("id").toString());
+                if(Integer.parseInt(existId) > 0){
+                    return 'D';
+                }
             }
             return 'S';
         } catch (NullPointerException e) {
-            e.printStackTrace();
-            return 'N';
+            throw new IllegalArgumentException(e);
         }
     }
+
+
 }

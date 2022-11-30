@@ -30,6 +30,9 @@ public class Member {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @Column(name = "salt")
     private String salt;
 }

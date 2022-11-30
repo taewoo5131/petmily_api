@@ -6,4 +6,6 @@ import java.util.Map;
 
 public interface MemberService {
     ResponseEntity Join(Map<String, Object> paramMap);
+
+    ResponseEntity login(Map<String, Object> paramMap);
 }

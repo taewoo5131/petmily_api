@@ -18,24 +18,27 @@ public class MemberController {
 
     @GetMapping("/join")
     public void getJoin() {
-        log.info("MemberController.getJoin >> {} " , "join");
+        log.info("[MemberController.getJoin] >> {} " , "join");
     }
 
     @PostMapping("/join")
     public ResponseEntity postJoin(
             @RequestBody Map<String , Object> paramMap
         ) {
-        log.info("MemberController.postJoin >> {} " , "join");
+        log.info("[MemberController.postJoin] >> {} " , "join");
         return memberService.Join(paramMap);
     }
 
     @GetMapping("/login")
     public void getLogin() {
-        log.info("MemberController.getLogin >> {} " , "login");
+        log.info("[MemberController.getLogin] >> {} " , "login");
     }
 
     @PostMapping("/login")
-    public void postLogin() {
-        log.info("MemberController.postLogin >> {} " , "login");
+    public ResponseEntity postLogin(
+            @RequestBody Map<String , Object> paramMap
+    ) {
+        log.info("[MemberController.postLogin] >> {} " , "login");
+        return memberService.login(paramMap);
     }
 }
