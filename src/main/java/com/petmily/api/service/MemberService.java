@@ -8,4 +8,6 @@ public interface MemberService {
     ResponseEntity Join(Map<String, Object> paramMap);
 
     ResponseEntity login(Map<String, Object> paramMap);
+
+    String getRefreshToken(String requestPk);
 }

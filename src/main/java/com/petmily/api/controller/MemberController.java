@@ -1,11 +1,16 @@
 package com.petmily.api.controller;
 
+import com.petmily.api.common.ResponseEnum;
+import com.petmily.api.common.SuccessResponse;
 import com.petmily.api.service.MemberService;
+import com.petmily.api.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -15,6 +20,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+
+    private final TokenService tokenService;
 
     @GetMapping("/join")
     public void getJoin() {
@@ -40,5 +47,27 @@ public class MemberController {
     ) {
         log.info("[MemberController.postLogin] >> {} " , "login");
         return memberService.login(paramMap);
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity refreshToken(
+            @RequestParam("pk") String requestPk
+    ) {
+        log.info("[MemberController.refreshToken] >> {} " , requestPk);
+        String refreshToken = memberService.getRefreshToken(requestPk);
+        boolean refreshTokenCheck = tokenService.tokenCheck(refreshToken);
+        if(refreshTokenCheck){
+            // accessToken 재발급
+            String accessToken = tokenService.createAccessToken(requestPk);
+            SuccessResponse successResponse = new SuccessResponse();
+            successResponse.setMsg(ResponseEnum.REISSUANCE_ACCESS_TOKEN.getMsg());
+            successResponse.setStatus(ResponseEnum.REISSUANCE_ACCESS_TOKEN.getCode());
+            successResponse.setData(Map.of("accessToken" , accessToken));
+            return new ResponseEntity(successResponse, HttpStatus.OK);
+        } else {
+            // 로그아웃 후 재로그인
+            System.out.println("로그아웃 !");
+        }
+        return null;
     }
 }

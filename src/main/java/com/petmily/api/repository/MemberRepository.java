@@ -22,6 +22,11 @@ public class MemberRepository {
         return member.getId();
     }
 
+    public Member findMemberByIdx(String requestPk) {
+        Member member = em.find(Member.class, Long.parseLong(requestPk));
+        return member;
+    }
+
     public String existMemberById(String id) {
         Object existIdCnt = em.createQuery("select count(m) from Member m where m.id =:id")
                 .setParameter("id", id)

@@ -72,18 +72,26 @@ public class MemberServiceImpl implements MemberService {
 
             if (findMember.getPassword().equals(encryptPassword)) {
                 SuccessResponse successResponse = new SuccessResponse();
-                TokenDTO token = tokenService.createToken(findMember.getIdx().toString());
+                String accessToken = tokenService.createAccessToken(findMember.getIdx().toString());
+                String refreshToken = tokenService.createRefreshToken();
+                TokenDTO tokenDTO = new TokenDTO(accessToken , refreshToken);
+
                 // refresh token DB에 저장
-                String refreshToken = token.getRefreshToken();
                 memberRepository.updateRefreshToken(findMember , refreshToken);
 
-                successResponse.setData(token);
+                successResponse.setData(tokenDTO);
                 return new ResponseEntity(successResponse, HttpStatus.OK);
             } else {
                 return new ResponseEntity(ResponseEnum.LOGIN_FAIL, HttpStatus.BAD_REQUEST);
             }
         }
         throw new IllegalArgumentException("MemberServiceImpl.login 필수값 누락");
+    }
+
+    @Override
+    public String getRefreshToken(String requestPk) {
+        Member findMember = memberRepository.findMemberByIdx(requestPk);
+        return findMember.getRefreshToken();
     }
 
     /**
