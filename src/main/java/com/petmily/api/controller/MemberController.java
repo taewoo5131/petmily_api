@@ -49,6 +49,11 @@ public class MemberController {
         return memberService.login(paramMap);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity postLogout() {
+        return null;
+    }
+
     @GetMapping("/refresh-token")
     public ResponseEntity refreshToken(
             @RequestParam("pk") String requestPk

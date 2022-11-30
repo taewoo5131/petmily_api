@@ -1,5 +1,6 @@
 package com.petmily.api.interceptor;
 
+import com.petmily.api.Exception.custom.TokenException;
 import com.petmily.api.security.JwtTokenProvider;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 // 로그아웃 후 재로그인
                 return false;
             }
-
         }
-        return false;
+        throw new TokenException("token 누락");
     }
 }
