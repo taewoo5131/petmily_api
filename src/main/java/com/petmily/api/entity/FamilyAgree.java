@@ -17,9 +17,13 @@ public class FamilyAgree {
     @Column(name = "family_agree_id")
     private Long idx;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_id")
+    private Family family;
 
     @Column(name = "agree_yn")
     private int agreeYn;

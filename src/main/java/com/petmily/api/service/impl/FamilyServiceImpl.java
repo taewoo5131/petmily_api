@@ -52,6 +52,7 @@ public class FamilyServiceImpl implements FamilyService {
 
             FamilyAgree familyAgree = new FamilyAgree();
             familyAgree.setMember(findMember);
+            familyAgree.setFamily(family);
             familyAgree.setAgreeYn(1);
             familyAgreeRepository.save(familyAgree);
 
