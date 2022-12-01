@@ -6,4 +6,6 @@ import java.util.Map;
 
 public interface FamilyService {
     ResponseEntity create(Map<String, Object> paramMap);
+
+    ResponseEntity regist(Map<String, Object> paramMap);
 }

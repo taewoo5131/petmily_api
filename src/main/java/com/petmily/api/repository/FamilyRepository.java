@@ -17,11 +17,15 @@ public class FamilyRepository {
 
     private final EntityManager em;
 
-
     public Family save(Family family) {
         em.persist(family);
         em.flush();
         Family saveFamily = em.find(Family.class, Long.parseLong(family.getIdx().toString()));
         return saveFamily;
+    }
+
+    public Family findFamilyByIdx(String familyIdx) {
+        Family family = em.find(Family.class, Long.parseLong(familyIdx));
+        return family;
     }
 }

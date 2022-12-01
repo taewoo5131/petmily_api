@@ -1,5 +1,7 @@
 package com.petmily.api.service.impl;
 
+import com.petmily.api.Exception.custom.TokenException;
+import com.petmily.api.common.PetmilyUtil;
 import com.petmily.api.common.ResponseEnum;
 import com.petmily.api.common.SuccessResponse;
 import com.petmily.api.dto.TokenDTO;
@@ -38,9 +40,12 @@ public class MemberServiceImpl implements MemberService {
     public ResponseEntity Join(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl join]");
         String[] checkKeyArr = {"id", "name", "password", "phoneNumber" , "email"};
-        char checkType = 'j';
-        char validCheck = this.validCheck(paramMap , checkKeyArr , checkType);
-        if (validCheck == 'S') {
+        if (PetmilyUtil.parameterNullCheck(paramMap , checkKeyArr)) {
+            String existIdOrEmail = memberRepository.existMemberByIdOrEmail(paramMap.get("id").toString() , paramMap.get("email").toString());
+            if(Integer.parseInt(existIdOrEmail) > 0){
+                return new ResponseEntity(ResponseEnum.DUP_MEMBER, HttpStatus.BAD_REQUEST);
+            }
+
             Member member = new Member();
             member.setId(paramMap.get("id").toString());
             member.setPassword(sha256.joinEncrypt(paramMap.get("password").toString()));
@@ -55,8 +60,6 @@ public class MemberServiceImpl implements MemberService {
                 successResponse.setData(member);
                 return new ResponseEntity(successResponse,HttpStatus.OK);
             }
-        } else if (validCheck == 'D') {
-            return new ResponseEntity(ResponseEnum.DUP_MEMBER, HttpStatus.BAD_REQUEST);
         }
         throw new IllegalArgumentException("MemberServiceImpl.join 필수값 누락");
     }
@@ -65,9 +68,7 @@ public class MemberServiceImpl implements MemberService {
     public ResponseEntity login(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl login]");
         String[] checkKeyArr = {"id" , "password"};
-        char checkType = 'l';
-        char validCheck = this.validCheck(paramMap, checkKeyArr , checkType);
-        if (validCheck == 'S') {
+        if (PetmilyUtil.parameterNullCheck(paramMap , checkKeyArr)) {
             // id에 해당하는 Member
             Member findMember = memberRepository.findMemberById(paramMap.get("id").toString());
             // salt값 가져오기
@@ -80,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
                 SuccessResponse successResponse = new SuccessResponse();
                 String accessToken = tokenService.createAccessToken(findMember.getIdx().toString());
                 String refreshToken = tokenService.createRefreshToken();
-                TokenDTO tokenDTO = new TokenDTO(accessToken , refreshToken);
+                TokenDTO tokenDTO = new TokenDTO(accessToken , refreshToken , findMember);
 
                 // refresh token DB에 저장
                 memberRepository.updateRefreshToken(findMember , refreshToken);
@@ -100,45 +101,31 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String getRefreshToken(String requestPk) {
         Member findMember = memberRepository.findMemberByIdx(requestPk);
+        try {
+            findMember.getRefreshToken();
+        } catch (NullPointerException e) {
+            throw new TokenException("refreshToken 없음 " + e.getMessage());
+        }
         return findMember.getRefreshToken();
     }
 
     @Override
-    public ResponseEntity logout(String memberId) {
+    public ResponseEntity logout(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl logout]");
+        String[] checkArr = {"memberIdx"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkArr)) {
+            throw new IllegalArgumentException("MemberServiceImpl.logout 필수값 누락");
+        }
+        String memberIdx = paramMap.get("memberIdx").toString();
+
         // redis에 블랙리스트 저장
-        String key = "member_"+memberId;
+        String key = "member_"+memberIdx;
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key , "logout");
 
         // DB refreshToken 제거
-        Member findMember = memberRepository.findMemberByIdx(memberId);
+        Member findMember = memberRepository.findMemberByIdx(memberIdx);
         memberRepository.updateRefreshToken(findMember,null);
         return new ResponseEntity(new SuccessResponse(), HttpStatus.OK);
     }
-
-    /**
-     * [checkKeyArr] Null 체크
-     * @param paramMap , keyArr , checkType
-     * @return char
-     *         ['S' : success , 'D' : duplicate ID , 'N' : NullPointerException]
-     */
-    private char validCheck(Map<String, Object> paramMap , String[] keyArr , char checkType) {
-        try {
-            for (String key : keyArr) {
-                Optional.of(paramMap.get(key)).toString();
-            }
-            if (checkType == 'j') {
-                String existIdOrEmail = memberRepository.existMemberByIdOrEmail(paramMap.get("id").toString() , paramMap.get("email").toString());
-                if(Integer.parseInt(existIdOrEmail) > 0){
-                    return 'D';
-                }
-            }
-            return 'S';
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-
 }

@@ -26,4 +26,12 @@ public class FamilyController {
         log.info("[FamilyController.createFamily] >> create");
         return familyService.create(paramMap);
     }
+
+    @PostMapping("/registration")
+    public ResponseEntity registryFamily(
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[FamilyController.registryFamily] >> regist");
+        return familyService.regist(paramMap);
+    }
 }

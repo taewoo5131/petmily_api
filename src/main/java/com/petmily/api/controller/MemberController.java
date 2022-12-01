@@ -51,10 +51,10 @@ public class MemberController {
 
     @GetMapping("/logout")
     public ResponseEntity getLogout(
-            @RequestParam("memberId") String memberId
+            @RequestParam("memberIdx") String memberIdx
     ) {
         log.info("[MemberController.getLogout] >> {} " , "logout");
-        return memberService.logout(memberId);
+        return memberService.logout(Map.of("memberIdx", memberIdx));
     }
 
     @GetMapping("/refresh-token")
@@ -77,7 +77,7 @@ public class MemberController {
             return new ResponseEntity(successResponse, HttpStatus.OK);
         } else {
             // 로그아웃 후 재로그인
-            return memberService.logout(requestPk);
+            return memberService.logout(Map.of("memberIdx" , requestPk));
         }
     }
 }

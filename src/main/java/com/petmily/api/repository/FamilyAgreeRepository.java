@@ -16,7 +16,10 @@ public class FamilyAgreeRepository {
 
     private final EntityManager em;
 
-    public void save(FamilyAgree familyAgree) {
+    public FamilyAgree save(FamilyAgree familyAgree) {
         em.persist(familyAgree);
+        em.flush();
+        FamilyAgree findFamilyAgree = em.find(FamilyAgree.class, Long.parseLong(familyAgree.getIdx().toString()));
+        return findFamilyAgree;
     }
 }

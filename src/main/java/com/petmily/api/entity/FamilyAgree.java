@@ -1,15 +1,14 @@
 package com.petmily.api.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @ToString
-@Getter
-@Setter
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "FAMILY_AGREE")
 public class FamilyAgree {
     @Id
@@ -25,6 +24,13 @@ public class FamilyAgree {
     @JoinColumn(name = "family_id")
     private Family family;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "agree_yn")
-    private int agreeYn;
+    private FamilyAgreeEnum familyAgreeEnum;
+
+    public FamilyAgree(Member member, Family family, FamilyAgreeEnum familyAgreeEnum) {
+        this.member = member;
+        this.family = family;
+        this.familyAgreeEnum = familyAgreeEnum;
+    }
 }

@@ -11,5 +11,5 @@ public interface MemberService {
 
     String getRefreshToken(String requestPk);
 
-    ResponseEntity logout(String memberId);
+    ResponseEntity logout(Map<String, Object> paramMap);
 }

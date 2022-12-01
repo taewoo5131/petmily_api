@@ -1,9 +1,11 @@
 package com.petmily.api.service.impl;
 
+import com.petmily.api.common.PetmilyUtil;
 import com.petmily.api.common.ResponseEnum;
 import com.petmily.api.common.SuccessResponse;
 import com.petmily.api.entity.Family;
 import com.petmily.api.entity.FamilyAgree;
+import com.petmily.api.entity.FamilyAgreeEnum;
 import com.petmily.api.entity.Member;
 import com.petmily.api.repository.FamilyAgreeRepository;
 import com.petmily.api.repository.FamilyRepository;
@@ -33,8 +35,9 @@ public class FamilyServiceImpl implements FamilyService {
     @Transactional
     public ResponseEntity create(Map<String, Object> paramMap) {
         log.info("[FamilyServiceImpl create]");
-        if (paramMap.get("memberIdx") == null || paramMap.get("memberIdx").equals("")) {
-            return new ResponseEntity(ResponseEnum.ILLEGAL_ARGS_ERROR , HttpStatus.BAD_REQUEST);
+        String[] checkKeyArr = {"memberIdx", "familyName"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap , checkKeyArr)) {
+            throw new IllegalArgumentException("FamilyServiceImpl.create 필수값 누락");
         }
         String memberIdx = paramMap.get("memberIdx").toString();
         boolean existFamily = memberRepository.existFamilyById(memberIdx);
@@ -53,7 +56,7 @@ public class FamilyServiceImpl implements FamilyService {
             FamilyAgree familyAgree = new FamilyAgree();
             familyAgree.setMember(findMember);
             familyAgree.setFamily(family);
-            familyAgree.setAgreeYn(1);
+            familyAgree.setFamilyAgreeEnum(FamilyAgreeEnum.Y);
             familyAgreeRepository.save(familyAgree);
 
             SuccessResponse successResponse = new SuccessResponse();
@@ -62,4 +65,23 @@ public class FamilyServiceImpl implements FamilyService {
         }
         return null;
     }
+
+    @Override
+    public ResponseEntity regist(Map<String, Object> paramMap) {
+        String[] checkKeyArr = {"memberIdx" , "familyIdx"};
+        if (PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            Member findMember = memberRepository.findMemberByIdx(paramMap.get("memberIdx").toString());
+            Family findFamily = familyRepository.findFamilyByIdx(paramMap.get("familyIdx").toString());
+            FamilyAgree familyAgree = new FamilyAgree(findMember, findFamily, FamilyAgreeEnum.N);
+            FamilyAgree save = familyAgreeRepository.save(familyAgree);
+            if (save != null) {
+                SuccessResponse successResponse = new SuccessResponse();
+                successResponse.setData(save);
+                return new ResponseEntity(successResponse, HttpStatus.OK);
+            }
+        }
+        return null;
+    }
+
+
 }
