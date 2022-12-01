@@ -5,18 +5,17 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @ToString
 @Getter @Setter
+@Table(name = "MEMBER")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long idx;
-
-    @Column(name = "family_id")
-    private Long family_id;
 
     @Column(name = "id")
     private String id;
@@ -35,4 +34,8 @@ public class Member {
 
     @Column(name = "salt")
     private String salt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_id")
+    private Family family;
 }

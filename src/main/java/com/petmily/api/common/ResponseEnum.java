@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ResponseEnum {
 
-    LOGIN_FAIL("1003", "로그인 실패"),
-    DUP_MEMBER("1002", "중복된 회원 정보"),
+    EXIST_FAMILY("3001", "이미 가족이 존재"),
+    LOGIN_FAIL("2002", "로그인 실패"),
+    DUP_MEMBER("2001", "중복된 회원 정보"),
     INTERNAL_SERVER_ERROR("1001", "서버 에러"),
     ILLEGAL_ARGS_ERROR("1000", "필수값 누락"),
     NO_REFRESH_TOKEN("0003", "REFRESH 토큰 누락"),
