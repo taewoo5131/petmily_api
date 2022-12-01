@@ -1,8 +1,10 @@
 package com.petmily.api.interceptor;
 
 import com.petmily.api.Exception.custom.TokenException;
+import com.petmily.api.common.RedisUtil;
 import com.petmily.api.security.JwtTokenProvider;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
@@ -15,10 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
+
+    private final RedisUtil redisUtil;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        RedisTemplate<String,String> redisTemplate = new RedisTemplate();
         log.info("[AuthInterceptor.prehandle] >> {} " , request.getRequestURI());
         String requestToken = "";
         requestToken = request.getHeader("X-AUTH-TOKEN");
@@ -31,9 +36,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                         .setSigningKey(Base64.getEncoder().encodeToString("petmilyapiproject2022".getBytes()))
                         .parseClaimsJws(requestToken)
                         .getBody();
-
-                System.out.println("블랙리스트 체크" + redisTemplate.hasKey("member_"+claims.get("pk")));
-                if (redisTemplate.hasKey("member_"+claims.get("pk"))) {
+                if (redisUtil.hasKey("member_"+claims.get("pk"))) {
                     throw new TokenException("blackList token");
                 }
 
