@@ -32,6 +32,7 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     @Transactional
     public ResponseEntity create(Map<String, Object> paramMap) {
+        log.info("[FamilyServiceImpl create]");
         if (paramMap.get("memberIdx") == null || paramMap.get("memberIdx").equals("")) {
             return new ResponseEntity(ResponseEnum.ILLEGAL_ARGS_ERROR , HttpStatus.BAD_REQUEST);
         }
@@ -51,7 +52,6 @@ public class FamilyServiceImpl implements FamilyService {
 
             FamilyAgree familyAgree = new FamilyAgree();
             familyAgree.setMember(findMember);
-            familyAgree.setFamily(saveFamily);
             familyAgree.setAgreeYn(1);
             familyAgreeRepository.save(familyAgree);
 

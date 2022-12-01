@@ -21,10 +21,6 @@ public class FamilyAgree {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "family_id")
-    private Family family;
-
     @Column(name = "agree_yn")
     private int agreeYn;
 }

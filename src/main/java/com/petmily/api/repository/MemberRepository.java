@@ -58,9 +58,10 @@ public class MemberRepository {
      * @param id
      * @return
      */
-    public String existMemberById(String id) {
-        Object existIdCnt = em.createQuery("select count(m) from Member m where m.id =:id")
+    public String existMemberByIdOrEmail(String id, String email) {
+        Object existIdCnt = em.createQuery("select count(m) from Member m where m.id =:id or m.email =: email")
                 .setParameter("id", id)
+                .setParameter("email" , email)
                 .getSingleResult();
         return existIdCnt.toString();
     }

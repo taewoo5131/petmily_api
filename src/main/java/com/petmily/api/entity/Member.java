@@ -29,6 +29,9 @@ public class Member {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "refresh_token")
     private String refreshToken;
 

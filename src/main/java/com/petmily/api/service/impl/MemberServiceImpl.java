@@ -36,8 +36,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public ResponseEntity Join(Map<String, Object> paramMap) {
-        log.info("[serviceImpl join]");
-        String[] checkKeyArr = {"id", "name", "password", "phoneNumber"};
+        log.info("[MemberServiceImpl join]");
+        String[] checkKeyArr = {"id", "name", "password", "phoneNumber" , "email"};
         char checkType = 'j';
         char validCheck = this.validCheck(paramMap , checkKeyArr , checkType);
         if (validCheck == 'S') {
@@ -47,10 +47,12 @@ public class MemberServiceImpl implements MemberService {
             member.setName(paramMap.get("name").toString());
             member.setPhoneNumber(paramMap.get("phoneNumber").toString());
             member.setSalt(sha256.getSalt());
+            member.setEmail(paramMap.get("email").toString());
             String saveId = memberRepository.save(member);
 
             if (saveId.equals(member.getId())) {
                 SuccessResponse successResponse = new SuccessResponse();
+                successResponse.setData(member);
                 return new ResponseEntity(successResponse,HttpStatus.OK);
             }
         } else if (validCheck == 'D') {
@@ -61,7 +63,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public ResponseEntity login(Map<String, Object> paramMap) {
-        log.info("[serviceImpl login]");
+        log.info("[MemberServiceImpl login]");
         String[] checkKeyArr = {"id" , "password"};
         char checkType = 'l';
         char validCheck = this.validCheck(paramMap, checkKeyArr , checkType);
@@ -103,6 +105,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public ResponseEntity logout(String memberId) {
+        log.info("[MemberServiceImpl logout]");
         // redis에 블랙리스트 저장
         String key = "member_"+memberId;
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -126,8 +129,8 @@ public class MemberServiceImpl implements MemberService {
                 Optional.of(paramMap.get(key)).toString();
             }
             if (checkType == 'j') {
-                String existId = memberRepository.existMemberById(paramMap.get("id").toString());
-                if(Integer.parseInt(existId) > 0){
+                String existIdOrEmail = memberRepository.existMemberByIdOrEmail(paramMap.get("id").toString() , paramMap.get("email").toString());
+                if(Integer.parseInt(existIdOrEmail) > 0){
                     return 'D';
                 }
             }
