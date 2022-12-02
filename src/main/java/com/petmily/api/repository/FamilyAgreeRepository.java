@@ -1,12 +1,16 @@
 package com.petmily.api.repository;
 
 import com.petmily.api.entity.FamilyAgree;
+import com.petmily.api.entity.FamilyAgreeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -24,9 +28,38 @@ public class FamilyAgreeRepository {
     }
 
     public FamilyAgree findByMemberIdx(String memberIdx) {
-        FamilyAgree findFamilyAgree = em.createQuery("select f from FamilyAgree f where f.member.idx =: memberIdx" , FamilyAgree.class)
-                .setParameter("memberIdx", Long.parseLong(memberIdx))
+        try {
+            String sql = "select f from FamilyAgree f " +
+                    "join fetch f.member " +
+                    "join fetch f.family " +
+                    "where f.member.idx =: memberIdx";
+            FamilyAgree findFamilyAgree = em.createQuery(sql, FamilyAgree.class)
+                    .setParameter("memberIdx", Long.parseLong(memberIdx))
+                    .getSingleResult();
+
+            return findFamilyAgree;
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public FamilyAgree updateAgreeYnByMemberIdxAndFamilyIdx(Map<String , Object> paramMap) {
+        String sql = "select f from FamilyAgree f " +
+                "join fetch f.member " +
+                "join fetch f.family " +
+                "where f.member.idx =: memberIdx and f.family.idx =: familyIdx";
+        FamilyAgree findFamilyAgree = em.createQuery(sql, FamilyAgree.class)
+                .setParameter("memberIdx", Long.parseLong(paramMap.get("memberIdx").toString()))
+                .setParameter("familyIdx", Long.parseLong(paramMap.get("familyIdx").toString()))
                 .getSingleResult();
+        findFamilyAgree.setFamilyAgreeEnum(FamilyAgreeEnum.Y);
+        return findFamilyAgree;
+    }
+
+    public FamilyAgree delete(Map<String , Object> paramMap) {
+        FamilyAgree findFamilyAgree = this.findByMemberIdx(paramMap.get("memberIdx").toString());
+        int deleteIdx = findFamilyAgree.getIdx().intValue();
+        em.remove(findFamilyAgree);
         return findFamilyAgree;
     }
 }

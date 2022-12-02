@@ -35,4 +35,12 @@ public class FamilyController {
         log.info("[FamilyController.registryFamily] >> regist");
         return familyService.regist(paramList);
     }
+
+    @PostMapping("/response")
+    public ResponseEntity responseFamily(
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[FamilyController.responseFamily] >> response");
+        return familyService.response(paramMap);
+    }
 }

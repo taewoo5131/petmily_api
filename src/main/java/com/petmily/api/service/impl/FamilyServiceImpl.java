@@ -71,6 +71,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     public ResponseEntity regist(List<Map<String, Object>> paramList) {
+        log.info("[FamilyServiceImpl regist]");
         String[] checkKeyArr = {"memberIdx" , "familyIdx"};
         List<FamilyAgree> resultList = new ArrayList();
         for (Map<String, Object> paramMap : paramList) {
@@ -94,5 +95,34 @@ public class FamilyServiceImpl implements FamilyService {
         return new ResponseEntity(successResponse, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity response(Map<String, Object> paramMap) {
+        log.info("[FamilyServiceImpl response]");
+        String[] checkKeyArr = {"memberIdx", "familyIdx", "agree_yn"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            throw new IllegalArgumentException("FamilyServiceImpl.response 필수값 누락");
+        }
 
+        String agree_yn = paramMap.get("agree_yn").toString();
+        if (FamilyAgreeEnum.Y.toString().equals(agree_yn)) {
+            FamilyAgree familyAgree = familyAgreeRepository.updateAgreeYnByMemberIdxAndFamilyIdx(paramMap);
+            if (familyAgree != null) {
+                memberRepository.updateFamily(familyAgree.getMember() , familyAgree.getFamily());
+                SuccessResponse successResponse = new SuccessResponse();
+                successResponse.setData(familyAgree);
+                return new ResponseEntity(successResponse, HttpStatus.OK);
+            }
+        } else if (FamilyAgreeEnum.N.toString().equals(agree_yn)) {
+            FamilyAgree delete = familyAgreeRepository.delete(paramMap);
+            if (delete != null ) {
+                SuccessResponse successResponse = new SuccessResponse();
+                successResponse.setData(delete);
+                return new ResponseEntity(successResponse, HttpStatus.OK);
+            }
+        } else {
+            throw new IllegalArgumentException("FamilyServiceImpl.response agree_yn Enum값에 해당 안됨");
+        }
+
+        return null;
+    }
 }

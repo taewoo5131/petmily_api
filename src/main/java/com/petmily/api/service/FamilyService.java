@@ -9,4 +9,6 @@ public interface FamilyService {
     ResponseEntity create(Map<String, Object> paramMap);
 
     ResponseEntity regist(List<Map<String, Object>> paramList);
+
+    ResponseEntity response(Map<String, Object> paramMap);
 }
