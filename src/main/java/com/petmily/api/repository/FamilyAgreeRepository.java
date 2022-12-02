@@ -22,4 +22,11 @@ public class FamilyAgreeRepository {
         FamilyAgree findFamilyAgree = em.find(FamilyAgree.class, Long.parseLong(familyAgree.getIdx().toString()));
         return findFamilyAgree;
     }
+
+    public FamilyAgree findByMemberIdx(String memberIdx) {
+        FamilyAgree findFamilyAgree = em.createQuery("select f from FamilyAgree f where f.member.idx =: memberIdx" , FamilyAgree.class)
+                .setParameter("memberIdx", Long.parseLong(memberIdx))
+                .getSingleResult();
+        return findFamilyAgree;
+    }
 }

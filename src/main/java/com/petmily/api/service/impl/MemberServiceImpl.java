@@ -99,17 +99,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String getRefreshToken(String requestPk) {
-        Member findMember = memberRepository.findMemberByIdx(requestPk);
-        try {
-            findMember.getRefreshToken();
-        } catch (NullPointerException e) {
-            throw new TokenException("refreshToken 없음 " + e.getMessage());
-        }
-        return findMember.getRefreshToken();
-    }
-
-    @Override
     public ResponseEntity logout(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl logout]");
         String[] checkArr = {"memberIdx"};
@@ -127,5 +116,28 @@ public class MemberServiceImpl implements MemberService {
         Member findMember = memberRepository.findMemberByIdx(memberIdx);
         memberRepository.updateRefreshToken(findMember,null);
         return new ResponseEntity(new SuccessResponse(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity findById(Map<String, Object> paramMap) {
+        String[] checkKeyArr = {"memberId"};
+        if (PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            Member findMember = memberRepository.findMemberById(paramMap.get("memberId").toString());
+            SuccessResponse successResponse = new SuccessResponse();
+            successResponse.setData(findMember);
+            return new ResponseEntity(successResponse, HttpStatus.OK);
+        }
+        throw new IllegalArgumentException("MemberServiceImpl findById 필수값 누락");
+    }
+
+    @Override
+    public String getRefreshToken(String requestPk) {
+        Member findMember = memberRepository.findMemberByIdx(requestPk);
+        try {
+            findMember.getRefreshToken();
+        } catch (NullPointerException e) {
+            throw new TokenException("refreshToken 없음 " + e.getMessage());
+        }
+        return findMember.getRefreshToken();
     }
 }

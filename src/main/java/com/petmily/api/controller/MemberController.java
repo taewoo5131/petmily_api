@@ -57,6 +57,14 @@ public class MemberController {
         return memberService.logout(Map.of("memberIdx", memberIdx));
     }
 
+    @GetMapping("/{memberId}")
+    public ResponseEntity getMember(
+            @PathVariable("memberId") String memberId
+    ) {
+        log.info("[MemberController.getMember] >> {} " , memberId);
+        return memberService.findById(Map.of("memberId" , memberId));
+    }
+
     @GetMapping("/refresh-token")
     public ResponseEntity refreshToken(
             @RequestParam("pk") String requestPk

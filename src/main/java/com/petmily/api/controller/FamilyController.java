@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,9 +30,9 @@ public class FamilyController {
 
     @PostMapping("/registration")
     public ResponseEntity registryFamily(
-            @RequestBody Map<String, Object> paramMap
+            @RequestBody List<Map<String, Object>> paramList
     ) {
         log.info("[FamilyController.registryFamily] >> regist");
-        return familyService.regist(paramMap);
+        return familyService.regist(paramList);
     }
 }

@@ -18,8 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -67,20 +70,28 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    public ResponseEntity regist(Map<String, Object> paramMap) {
+    public ResponseEntity regist(List<Map<String, Object>> paramList) {
         String[] checkKeyArr = {"memberIdx" , "familyIdx"};
-        if (PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
-            Member findMember = memberRepository.findMemberByIdx(paramMap.get("memberIdx").toString());
-            Family findFamily = familyRepository.findFamilyByIdx(paramMap.get("familyIdx").toString());
-            FamilyAgree familyAgree = new FamilyAgree(findMember, findFamily, FamilyAgreeEnum.N);
-            FamilyAgree save = familyAgreeRepository.save(familyAgree);
-            if (save != null) {
-                SuccessResponse successResponse = new SuccessResponse();
-                successResponse.setData(save);
-                return new ResponseEntity(successResponse, HttpStatus.OK);
+        List<FamilyAgree> resultList = new ArrayList();
+        for (Map<String, Object> paramMap : paramList) {
+            if (PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+                FamilyAgree existMember = familyAgreeRepository.findByMemberIdx(paramMap.get("memberIdx").toString());
+                if (existMember != null) {
+                    return new ResponseEntity(ResponseEnum.EXIST_FAMILY, HttpStatus.BAD_REQUEST);
+                }
+
+                Member findMember = memberRepository.findMemberByIdx(paramMap.get("memberIdx").toString());
+                Family findFamily = familyRepository.findFamilyByIdx(paramMap.get("familyIdx").toString());
+                FamilyAgree familyAgree = new FamilyAgree(findMember, findFamily, FamilyAgreeEnum.N);
+                FamilyAgree save = familyAgreeRepository.save(familyAgree);
+                if (save != null) {
+                    resultList.add(save);
+                }
             }
         }
-        return null;
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.setData(resultList);
+        return new ResponseEntity(successResponse, HttpStatus.OK);
     }
 
 

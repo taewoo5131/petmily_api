@@ -9,7 +9,9 @@ public interface MemberService {
 
     ResponseEntity login(Map<String, Object> paramMap);
 
-    String getRefreshToken(String requestPk);
+    ResponseEntity findById(Map<String, Object> paramMap);
 
     ResponseEntity logout(Map<String, Object> paramMap);
+
+    String getRefreshToken(String requestPk);
 }

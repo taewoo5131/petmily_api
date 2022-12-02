@@ -25,6 +25,7 @@ public class Member {
     private String name;
 
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
     @Column(name = "phone_number")
@@ -34,9 +35,11 @@ public class Member {
     private String email;
 
     @Column(name = "refresh_token")
+    @JsonIgnore
     private String refreshToken;
 
     @Column(name = "salt")
+    @JsonIgnore
     private String salt;
 
     @ManyToOne(fetch = FetchType.LAZY)

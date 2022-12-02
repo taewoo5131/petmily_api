@@ -1,5 +1,6 @@
 package com.petmily.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.petmily.api.entity.Member;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class TokenDTO {
     private String accessToken;
+    @JsonIgnore
     private String refreshToken;
     private Member member;
 
