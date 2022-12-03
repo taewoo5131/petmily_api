@@ -1,7 +1,7 @@
 package com.petmily.api.repository;
 
 import com.petmily.api.entity.FamilyAgree;
-import com.petmily.api.entity.FamilyAgreeEnum;
+import com.petmily.api.entity.AgreeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -52,7 +51,7 @@ public class FamilyAgreeRepository {
                 .setParameter("memberIdx", Long.parseLong(paramMap.get("memberIdx").toString()))
                 .setParameter("familyIdx", Long.parseLong(paramMap.get("familyIdx").toString()))
                 .getSingleResult();
-        findFamilyAgree.setFamilyAgreeEnum(FamilyAgreeEnum.Y);
+        findFamilyAgree.setAgreeEnum(AgreeEnum.Y);
         return findFamilyAgree;
     }
 

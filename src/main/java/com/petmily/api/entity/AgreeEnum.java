@@ -1,5 +1,5 @@
 package com.petmily.api.entity;
 
-public enum FamilyAgreeEnum {
+public enum AgreeEnum {
     Y , N
 }

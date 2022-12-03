@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class MemberCalendarNoti {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_calendar_id")
+    @Column(name = "member_calendar_noti_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,5 +24,9 @@ public class MemberCalendarNoti {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "noti_id")
     private CalendarNoti calendarNoti;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "check_yn")
+    private AgreeEnum checkYn;
 
 }

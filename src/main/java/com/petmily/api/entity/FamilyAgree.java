@@ -26,11 +26,11 @@ public class FamilyAgree {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "agree_yn")
-    private FamilyAgreeEnum familyAgreeEnum;
+    private AgreeEnum agreeEnum;
 
-    public FamilyAgree(Member member, Family family, FamilyAgreeEnum familyAgreeEnum) {
+    public FamilyAgree(Member member, Family family, AgreeEnum agreeEnum) {
         this.member = member;
         this.family = family;
-        this.familyAgreeEnum = familyAgreeEnum;
+        this.agreeEnum = agreeEnum;
     }
 }

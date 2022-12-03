@@ -97,4 +97,15 @@ public class MemberRepository {
         Member findMember = em.find(Member.class, member.getIdx());
         findMember.setFamily(family);
     }
+
+    /**
+     * 같은 가족의 회원 찾기
+     * @return
+     */
+    public List<Member> findAllMemberByFamily(Family family) {
+        List<Member> findMember = em.createQuery("select m from Member m where m.family =: family", Member.class)
+                .setParameter("family", family)
+                .getResultList();
+        return findMember;
+    }
 }

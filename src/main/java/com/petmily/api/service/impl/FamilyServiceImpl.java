@@ -5,7 +5,7 @@ import com.petmily.api.common.ResponseEnum;
 import com.petmily.api.common.SuccessResponse;
 import com.petmily.api.entity.Family;
 import com.petmily.api.entity.FamilyAgree;
-import com.petmily.api.entity.FamilyAgreeEnum;
+import com.petmily.api.entity.AgreeEnum;
 import com.petmily.api.entity.Member;
 import com.petmily.api.repository.FamilyAgreeRepository;
 import com.petmily.api.repository.FamilyRepository;
@@ -18,9 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +57,7 @@ public class FamilyServiceImpl implements FamilyService {
             FamilyAgree familyAgree = new FamilyAgree();
             familyAgree.setMember(findMember);
             familyAgree.setFamily(family);
-            familyAgree.setFamilyAgreeEnum(FamilyAgreeEnum.Y);
+            familyAgree.setAgreeEnum(AgreeEnum.Y);
             familyAgreeRepository.save(familyAgree);
 
             SuccessResponse successResponse = new SuccessResponse();
@@ -83,7 +81,7 @@ public class FamilyServiceImpl implements FamilyService {
 
                 Member findMember = memberRepository.findMemberByIdx(paramMap.get("memberIdx").toString());
                 Family findFamily = familyRepository.findFamilyByIdx(paramMap.get("familyIdx").toString());
-                FamilyAgree familyAgree = new FamilyAgree(findMember, findFamily, FamilyAgreeEnum.N);
+                FamilyAgree familyAgree = new FamilyAgree(findMember, findFamily, AgreeEnum.N);
                 FamilyAgree save = familyAgreeRepository.save(familyAgree);
                 if (save != null) {
                     resultList.add(save);
@@ -104,7 +102,7 @@ public class FamilyServiceImpl implements FamilyService {
         }
 
         String agree_yn = paramMap.get("agree_yn").toString();
-        if (FamilyAgreeEnum.Y.toString().equals(agree_yn)) {
+        if (AgreeEnum.Y.toString().equals(agree_yn)) {
             FamilyAgree familyAgree = familyAgreeRepository.updateAgreeYnByMemberIdxAndFamilyIdx(paramMap);
             if (familyAgree != null) {
                 memberRepository.updateFamily(familyAgree.getMember() , familyAgree.getFamily());
@@ -112,7 +110,7 @@ public class FamilyServiceImpl implements FamilyService {
                 successResponse.setData(familyAgree);
                 return new ResponseEntity(successResponse, HttpStatus.OK);
             }
-        } else if (FamilyAgreeEnum.N.toString().equals(agree_yn)) {
+        } else if (AgreeEnum.N.toString().equals(agree_yn)) {
             FamilyAgree delete = familyAgreeRepository.delete(paramMap);
             if (delete != null ) {
                 SuccessResponse successResponse = new SuccessResponse();
