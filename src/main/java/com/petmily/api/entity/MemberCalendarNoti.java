@@ -10,21 +10,19 @@ import javax.persistence.*;
 @ToString
 @Getter
 @Setter
-@Table(name = "CALENDAR")
-public class Calendar {
+@Table(name = "MEMBER_CALENDAR_NOTI")
+public class MemberCalendarNoti {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "calendar_id")
+    @Column(name = "member_calendar_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "family_id")
-    private Family family;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Column(name = "target_date")
-    private String targetDate;
-
-    @Column(name = "target_name")
-    private String targetName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "noti_id")
+    private CalendarNoti calendarNoti;
 
 }
