@@ -2,6 +2,7 @@ package com.petmily.api.service.impl;
 
 import com.petmily.api.common.PetmilyUtil;
 import com.petmily.api.common.SuccessResponse;
+import com.petmily.api.dto.MemberCalendarSelectDTO;
 import com.petmily.api.entity.*;
 import com.petmily.api.repository.CalendarNotiRepository;
 import com.petmily.api.repository.CalendarRepository;
@@ -75,5 +76,20 @@ public class CalendarServiceImpl implements CalendarService {
         SuccessResponse successResponse = new SuccessResponse();
         successResponse.setData(calendar);
         return new ResponseEntity(successResponse, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity select(Map<String, Object> paramMap) {
+        log.info("[CalendarServiceImpl select]");
+        String[] checkKeyArr = {"memberIdx", "familyIdx" , "searchStartDate" , "searchEndDate"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            throw new IllegalArgumentException("CalendarServiceImpl.select 필수값 누락");
+        }
+
+        List<MemberCalendarSelectDTO> resultList = memberCalendarNotiService.select(paramMap);
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.setData(resultList);
+
+        return new ResponseEntity(successResponse , HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.petmily.api.service;
 
+import com.petmily.api.dto.MemberCalendarSelectDTO;
 import com.petmily.api.entity.*;
 import com.petmily.api.repository.FamilyRepository;
 import com.petmily.api.repository.MemberCalendarNotiRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -33,5 +35,10 @@ public class MemberCalendarNotiService {
             result.add(save);
         });
         return result;
+    }
+
+    public List<MemberCalendarSelectDTO> select(Map<String, Object> paramMap) {
+        List<MemberCalendarSelectDTO> resultList = memberCalendarNotiRepository.findByMemberIdxAndSearchDateBetween(paramMap);
+        return resultList;
     }
 }
