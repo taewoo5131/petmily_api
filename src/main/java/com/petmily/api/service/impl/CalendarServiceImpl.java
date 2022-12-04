@@ -33,7 +33,7 @@ public class CalendarServiceImpl implements CalendarService {
     @Transactional
     public ResponseEntity create(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl create]");
-        String[] checkKeyArr = {"memberIdx","familyIdx", "target_date", "target_name"};
+        String[] checkKeyArr = {"memberIdx","familyIdx", "targetDate", "targetName"};
         if (!PetmilyUtil.parameterNullCheck(paramMap , checkKeyArr)) {
             throw new IllegalArgumentException("CalendarServiceImpl.create 필수값 누락");
         }
@@ -48,8 +48,8 @@ public class CalendarServiceImpl implements CalendarService {
          */
         Calendar calendar = new Calendar();
         calendar.setFamily(findFamily);
-        calendar.setTargetDate(paramMap.get("target_date").toString());
-        calendar.setTargetName(paramMap.get("target_name").toString());
+        calendar.setTargetDate(paramMap.get("targetDate").toString());
+        calendar.setTargetName(paramMap.get("targetName").toString());
         Calendar saveCalendar = calendarRepository.save(calendar);
         if (saveCalendar == null) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,6 +90,34 @@ public class CalendarServiceImpl implements CalendarService {
         SuccessResponse successResponse = new SuccessResponse();
         successResponse.setData(resultList);
 
+        return new ResponseEntity(successResponse , HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity update(Map<String, Object> paramMap) {
+        log.info("[CalendarServiceImpl update]");
+        String[] checkKeyArr = {"calendarIdx","memberIdx","familyIdx", "targetDate", "targetName"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            throw new IllegalArgumentException("CalendarServiceImpl.update 필수값 누락");
+        }
+
+        Long updateIdx = calendarRepository.update(paramMap);
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.setData(Map.of("calendarIdx" , updateIdx));
+        return new ResponseEntity(successResponse , HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity delete(Map<String, Object> paramMap) {
+        log.info("[CalendarServiceImpl delete]");
+        String[] checkKeyArr = {"familyIdx" , "calendarIdx"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            throw new IllegalArgumentException("CalendarServiceImpl.delete 필수값 누락");
+        }
+
+        Long deleteIdx = calendarRepository.delete(paramMap);
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.setData(Map.of("calendarIdx" , deleteIdx));
         return new ResponseEntity(successResponse , HttpStatus.OK);
     }
 }
