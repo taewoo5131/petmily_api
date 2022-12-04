@@ -31,4 +31,20 @@ public class CalendarController {
         log.info("[CalendarController.selectCalendar] >> select");
         return calendarService.select(paramMap);
     }
+
+    @PatchMapping
+    public ResponseEntity updateCalendar(
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[CalendarController.updateCalendar] >> update");
+        return calendarService.update(paramMap);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteCalendar(
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[CalendarController.deleteCalendar] >> delete");
+        return calendarService.delete(paramMap);
+    }
 }
