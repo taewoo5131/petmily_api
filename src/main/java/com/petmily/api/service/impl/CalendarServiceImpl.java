@@ -33,6 +33,7 @@ public class CalendarServiceImpl implements CalendarService {
     @Transactional
     public ResponseEntity create(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl create]");
+        log.info("여기 {} " , paramMap);
         String[] checkKeyArr = {"memberIdx","familyIdx", "targetDate", "targetName"};
         if (!PetmilyUtil.parameterNullCheck(paramMap , checkKeyArr)) {
             throw new IllegalArgumentException("CalendarServiceImpl.create 필수값 누락");
@@ -108,6 +109,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity delete(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl delete]");
         String[] checkKeyArr = {"familyIdx" , "calendarIdx"};
@@ -115,9 +117,29 @@ public class CalendarServiceImpl implements CalendarService {
             throw new IllegalArgumentException("CalendarServiceImpl.delete 필수값 누락");
         }
 
-        Long deleteIdx = calendarRepository.delete(paramMap);
+        Long deleteCalendarIdx = calendarRepository.delete(paramMap);
+        CalendarNoti findCalendarNoti = calendarNotiRepository.findByCalendarIdx(deleteCalendarIdx);
+        Long deleteCalendarNotiIdx = calendarNotiRepository.delete(findCalendarNoti);
+        memberCalendarNotiService.delete(deleteCalendarNotiIdx);
         SuccessResponse successResponse = new SuccessResponse();
-        successResponse.setData(Map.of("calendarIdx" , deleteIdx));
+        successResponse.setData(Map.of("calendarIdx" , deleteCalendarIdx));
+        return new ResponseEntity(successResponse , HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity check(Map<String, Object> paramMap) {
+        log.info("[CalendarServiceImpl check]");
+        String[] checkKeyArr = {"memberIdx" , "calendarIdx" , "checkYn"};
+        if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
+            throw new IllegalArgumentException("CalendarServiceImpl.check 필수값 누락");
+        }
+
+        MemberCalendarNoti update = memberCalendarNotiService.update(paramMap);
+        if (update == null) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        SuccessResponse successResponse = new SuccessResponse();
+        successResponse.setData(update);
         return new ResponseEntity(successResponse , HttpStatus.OK);
     }
 }

@@ -9,4 +9,5 @@ public interface CalendarService {
     ResponseEntity select(Map<String, Object> paramMap);
     ResponseEntity update(Map<String, Object> paramMap);
     ResponseEntity delete(Map<String, Object> paramMap);
+    ResponseEntity check(Map<String, Object> paramMap);
 }

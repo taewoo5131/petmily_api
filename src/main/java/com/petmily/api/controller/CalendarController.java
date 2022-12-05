@@ -47,4 +47,12 @@ public class CalendarController {
         log.info("[CalendarController.deleteCalendar] >> delete");
         return calendarService.delete(paramMap);
     }
+
+    @PostMapping("/check")
+    public ResponseEntity checkCalendar(
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[CalendarController.checkCalendar] >> check");
+        return calendarService.check(paramMap);
+    }
 }

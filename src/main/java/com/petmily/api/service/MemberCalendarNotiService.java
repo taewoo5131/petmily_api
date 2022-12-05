@@ -41,4 +41,17 @@ public class MemberCalendarNotiService {
         List<MemberCalendarSelectDTO> resultList = memberCalendarNotiRepository.findByMemberIdxAndSearchDateBetween(paramMap);
         return resultList;
     }
+
+    public MemberCalendarNoti update(Map<String, Object> paramMap) {
+        return memberCalendarNotiRepository.update(paramMap);
+    }
+
+    public List<MemberCalendarNoti> findAllByNotiIdx(Long notiIdx) {
+        return memberCalendarNotiRepository.findAllByNotiIdx(notiIdx);
+    }
+
+    public int delete(Long notiIdx) {
+        int resultRows = memberCalendarNotiRepository.deleteByNotiIdx(notiIdx);
+        return resultRows;
+    }
 }
