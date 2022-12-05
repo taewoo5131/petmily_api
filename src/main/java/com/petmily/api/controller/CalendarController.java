@@ -26,10 +26,13 @@ public class CalendarController {
 
     @GetMapping
     public ResponseEntity selectCalendar(
-            @RequestBody Map<String, Object> paramMap
+            @RequestHeader(value = "memberIdx") String memberIdx ,
+            @RequestHeader(value = "familyIdx") String familyIdx ,
+            @RequestHeader(value = "searchStartDate") String searchStartDate ,
+            @RequestHeader(value = "searchEndDate") String searchEndDate
     ) {
         log.info("[CalendarController.selectCalendar] >> select");
-        return calendarService.select(paramMap);
+        return calendarService.select(Map.of("memberIdx" , memberIdx , "familyIdx" , familyIdx , "searchStartDate" , searchStartDate , "searchEndDate" , searchEndDate));
     }
 
     @PatchMapping
