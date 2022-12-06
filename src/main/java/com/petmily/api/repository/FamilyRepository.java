@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,8 @@ import java.util.Map;
 @Transactional
 public class FamilyRepository {
 
-    private final EntityManager em;
+    @PersistenceContext
+    private EntityManager em;
 
     public Family save(Family family) {
         em.persist(family);

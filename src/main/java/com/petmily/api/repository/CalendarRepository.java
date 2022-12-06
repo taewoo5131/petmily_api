@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Map;
 
@@ -15,7 +16,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 public class CalendarRepository {
-    private final EntityManager em;
+
+    @PersistenceContext
+    private EntityManager em;
 
     public Calendar save(Calendar calendar) {
         em.persist(calendar);
