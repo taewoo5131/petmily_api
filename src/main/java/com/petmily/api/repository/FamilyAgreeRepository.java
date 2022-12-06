@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import java.util.Map;
 
 @Slf4j
@@ -18,8 +17,7 @@ import java.util.Map;
 @Transactional
 public class FamilyAgreeRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public FamilyAgree save(FamilyAgree familyAgree) {
         em.persist(familyAgree);

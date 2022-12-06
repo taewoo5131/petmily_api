@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,7 @@ import java.util.Map;
 @Transactional
 public class CalendarNotiRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public CalendarNoti findByCalendarIdx(Long calendarIdx) {
         CalendarNoti find = em.createQuery("select cm from CalendarNoti cm " +

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Date;
 import java.util.List;
@@ -21,8 +20,7 @@ import java.util.Map;
 @Transactional
 public class MemberCalendarNotiRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public MemberCalendarNoti save(MemberCalendarNoti memberCalendarNoti) {
         em.persist(memberCalendarNoti);

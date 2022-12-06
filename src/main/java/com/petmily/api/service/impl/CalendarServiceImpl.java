@@ -112,7 +112,7 @@ public class CalendarServiceImpl implements CalendarService {
     @Transactional
     public ResponseEntity delete(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl delete]");
-        String[] checkKeyArr = {"memberIdx","familyIdx" , "calendarIdx"};
+        String[] checkKeyArr = {"familyIdx" , "calendarIdx"};
         if (!PetmilyUtil.parameterNullCheck(paramMap, checkKeyArr)) {
             throw new IllegalArgumentException("CalendarServiceImpl.delete 필수값 누락");
         }
