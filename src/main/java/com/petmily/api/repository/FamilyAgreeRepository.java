@@ -14,7 +14,6 @@ import java.util.Map;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-@Transactional
 public class FamilyAgreeRepository {
 
     private final EntityManager em;

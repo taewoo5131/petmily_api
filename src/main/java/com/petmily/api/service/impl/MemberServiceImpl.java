@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
 
     private SHA256 sha256 = new SHA256();
@@ -37,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
+    @Transactional
     public ResponseEntity Join(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl join]");
         String[] checkKeyArr = {"id", "name", "password", "phoneNumber" , "email"};
@@ -65,6 +68,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity login(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl login]");
         String[] checkKeyArr = {"id" , "password"};
@@ -99,6 +103,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity logout(Map<String, Object> paramMap) {
         log.info("[MemberServiceImpl logout]");
         String[] checkArr = {"memberIdx"};

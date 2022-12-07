@@ -17,7 +17,6 @@ import java.util.Map;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-@Transactional
 public class MemberCalendarNotiRepository {
 
     private final EntityManager em;

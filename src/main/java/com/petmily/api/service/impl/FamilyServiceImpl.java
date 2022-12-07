@@ -26,6 +26,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FamilyServiceImpl implements FamilyService {
 
     private final MemberRepository memberRepository;
@@ -68,6 +69,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity regist(List<Map<String, Object>> paramList) {
         log.info("[FamilyServiceImpl regist]");
         String[] checkKeyArr = {"memberIdx" , "familyIdx"};
@@ -94,6 +96,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity response(Map<String, Object> paramMap) {
         log.info("[FamilyServiceImpl response]");
         String[] checkKeyArr = {"memberIdx", "familyIdx", "agree_yn"};

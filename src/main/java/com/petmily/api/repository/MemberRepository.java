@@ -13,7 +13,6 @@ import java.util.List;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-@Transactional
 public class MemberRepository {
 
     private final EntityManager em;

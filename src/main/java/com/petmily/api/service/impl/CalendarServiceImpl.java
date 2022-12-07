@@ -22,6 +22,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CalendarServiceImpl implements CalendarService {
 
     private final CalendarRepository calendarRepository;
@@ -95,6 +96,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity update(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl update]");
         String[] checkKeyArr = {"calendarIdx","memberIdx","familyIdx", "targetDate", "targetName"};
@@ -127,6 +129,7 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity check(Map<String, Object> paramMap) {
         log.info("[CalendarServiceImpl check]");
         String[] checkKeyArr = {"memberIdx" , "calendarIdx" , "checkYn"};

@@ -8,6 +8,7 @@ import com.petmily.api.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,13 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberCalendarNotiService {
 
     private final MemberRepository memberRepository;
     private final MemberCalendarNotiRepository memberCalendarNotiRepository;
 
+    @Transactional
     public List<MemberCalendarNoti> create(String memberIdx,Family paramFamily , CalendarNoti paramCalendarNoti) {
         List<MemberCalendarNoti> result = new ArrayList<>();
         // family에 해당하는 멤버 찾기
@@ -42,6 +45,7 @@ public class MemberCalendarNotiService {
         return resultList;
     }
 
+    @Transactional
     public MemberCalendarNoti update(Map<String, Object> paramMap) {
         return memberCalendarNotiRepository.update(paramMap);
     }
@@ -50,6 +54,7 @@ public class MemberCalendarNotiService {
         return memberCalendarNotiRepository.findAllByNotiIdx(notiIdx);
     }
 
+    @Transactional
     public int delete(Long notiIdx) {
         int resultRows = memberCalendarNotiRepository.deleteByNotiIdx(notiIdx);
         return resultRows;
