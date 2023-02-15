@@ -25,27 +25,27 @@ public class MemberController {
 
     @GetMapping("/join")
     public void getJoin() {
-        log.info("[MemberController.getJoin] >> {} " , "join");
+        log.info("[MemberController.getJoin] >> {} ", "join");
     }
 
     @PostMapping("/join")
     public ResponseEntity postJoin(
-            @RequestBody Map<String , Object> paramMap
-        ) {
-        log.info("[MemberController.postJoin] >> {} " , "join");
+            @RequestBody Map<String, Object> paramMap
+    ) {
+        log.info("[MemberController.postJoin] >> {} ", "join");
         return memberService.Join(paramMap);
     }
 
     @GetMapping("/login")
     public void getLogin() {
-        log.info("[MemberController.getLogin] >> {} " , "login");
+        log.info("[MemberController.getLogin] >> {} ", "login");
     }
 
     @PostMapping("/login")
     public ResponseEntity postLogin(
-            @RequestBody Map<String , Object> paramMap
+            @RequestBody Map<String, Object> paramMap
     ) {
-        log.info("[MemberController.postLogin] >> {} " , "login");
+        log.info("[MemberController.postLogin] >> {} ", "login");
         return memberService.login(paramMap);
     }
 
@@ -53,7 +53,7 @@ public class MemberController {
     public ResponseEntity getLogout(
             @RequestParam("memberIdx") String memberIdx
     ) {
-        log.info("[MemberController.getLogout] >> {} " , "logout");
+        log.info("[MemberController.getLogout] >> {} ", "logout");
         return memberService.logout(Map.of("memberIdx", memberIdx));
     }
 
@@ -61,31 +61,36 @@ public class MemberController {
     public ResponseEntity getMember(
             @PathVariable("memberId") String memberId
     ) {
-        log.info("[MemberController.getMember] >> {} " , memberId);
-        return memberService.findById(Map.of("memberId" , memberId));
+        log.info("[MemberController.getMember] >> {} ", memberId);
+        return memberService.findById(Map.of("memberId", memberId));
     }
 
     @GetMapping("/refresh-token")
     public ResponseEntity refreshToken(
             @RequestParam("pk") String requestPk
     ) {
-        log.info("[MemberController.refreshToken] >> {} " , requestPk);
+        log.info("[MemberController.refreshToken] >> {} ", requestPk);
         String refreshToken = memberService.getRefreshToken(requestPk);
         if (refreshToken == null) {
             return new ResponseEntity(ResponseEnum.NO_REFRESH_TOKEN, HttpStatus.BAD_REQUEST);
         }
         boolean refreshTokenCheck = tokenService.tokenCheck(refreshToken);
-        if(refreshTokenCheck){
+        if (refreshTokenCheck) {
             // accessToken 재발급
             String accessToken = tokenService.createAccessToken(requestPk);
             SuccessResponse successResponse = new SuccessResponse();
             successResponse.setMsg(ResponseEnum.REISSUANCE_ACCESS_TOKEN.getMsg());
             successResponse.setStatus(ResponseEnum.REISSUANCE_ACCESS_TOKEN.getCode());
-            successResponse.setData(Map.of("accessToken" , accessToken));
+            successResponse.setData(Map.of("accessToken", accessToken));
             return new ResponseEntity(successResponse, HttpStatus.OK);
         } else {
             // 로그아웃 후 재로그인
-            return memberService.logout(Map.of("memberIdx" , requestPk));
+            return memberService.logout(Map.of("memberIdx", requestPk));
         }
+    }
+
+    @GetMapping("/test")
+    public void test() {
+        memberService.test();
     }
 }

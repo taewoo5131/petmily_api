@@ -14,4 +14,6 @@ public interface MemberService {
     ResponseEntity logout(Map<String, Object> paramMap);
 
     String getRefreshToken(String requestPk);
+
+    void test();
 }

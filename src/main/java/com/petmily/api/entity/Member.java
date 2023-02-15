@@ -42,7 +42,7 @@ public class Member {
     @JsonIgnore
     private String salt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "family_id")
     @JsonIgnore
     private Family family;

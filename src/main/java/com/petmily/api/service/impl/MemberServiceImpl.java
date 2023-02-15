@@ -145,4 +145,9 @@ public class MemberServiceImpl implements MemberService {
         }
         return findMember.getRefreshToken();
     }
+
+    @Override
+    public void test() {
+        memberRepository.test();
+    }
 }

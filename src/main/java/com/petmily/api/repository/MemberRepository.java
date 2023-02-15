@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.List;
 
 @Slf4j
@@ -106,5 +107,10 @@ public class MemberRepository {
                 .setParameter("family", family)
                 .getResultList();
         return findMember;
+    }
+
+    public void test() {
+        Query query = em.createQuery("select m from Member m join fetch Family f where m.id='test'");
+        System.out.println(query);
     }
 }
